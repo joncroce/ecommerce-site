@@ -236,6 +236,10 @@
 <script>
 	(async () => {
 		const productsData = await fetchProducts();
+
+		const linkedDataJson = createLinkedDataJson(productsData);
+		insertLinkedDataScript(linkedDataJson);
+
 		const categoryListEl = createCategoryListEl(productsData);
 		document.getElementById('products-container').appendChild(categoryListEl);
 	})();
@@ -251,6 +255,51 @@
 		}
 
 		return data;
+	}
+
+	function insertLinkedDataScript(json) {
+		const scriptEl = document.createElement('script');
+		scriptEl.type = 'application/ld+json';
+		scriptEl.text = JSON.stringify(json);
+
+		document.querySelector('head').appendChild(scriptEl);
+	}
+
+	function createLinkedDataJson(productsData = []) {
+		return {
+			"@context": "http://schema.org",
+			"@type": "ItemList",
+			"url": document.documentURI,
+			"numberOfItems": productsData.length,
+			"itemListElement": productsData.map((productData) => {
+				const { cat, product, price, sale } = productData;
+				return {
+					"@type": "Product",
+					"name": product,
+					"category": cat,
+					"Offers": [
+						{
+							"@type": "Offer",
+							"Description": "Regular Price",
+							"Price Specification": {
+								"@type": "PriceSpecification",
+								"Currency": "USD",
+								"Value": price
+							},
+						},
+						{
+							"@type": "Offer",
+							"Description": "Sale Price",
+							"Price Specification": {
+								"@type": "PriceSpecification",
+								"Currency": "USD",
+								"Value": sale
+							}
+						}
+					],
+				}
+			})
+		}
 	}
 
 	function createCategoryListEl(productsData = []) {

@@ -18,6 +18,11 @@
 			margin: 0;
 		}
 
+		body {
+			display: grid;
+			place-items: center;
+		}
+
 		/* Reset styling from button defaults */
 		.category__wrapper,
 		.product__wrapper {
@@ -32,14 +37,13 @@
 		}
 
 		#menu {
-			margin-inline: auto;
 			padding: 0;
 			display: grid;
 			grid-auto-rows: auto;
 			gap: 2px;
 			border: 2px solid #333;
 			background-color: #333;
-			max-width: clamp(200px, 30vw, 800px);
+			width: clamp(320px, 100%, 640px);
 		}
 
 		.category__wrapper {

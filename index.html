@@ -1,19 +1,25 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="og:title" content="E-Commerce Site">
-	<meta name="og:description"
-		content="Demo using native browser tech of a hierarchical menu displaying products by collapsible categories with &quot;add to favorites&quot; functionality.">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta name="description"
-		content="Demo using native browser tech of a hierarchical menu displaying products by collapsible categories with &quot;add to favorites&quot; functionality.">
-	<meta name="og:url" content="https://joncroce.github.io/ecommerce-site/">
-	<meta name="og:image" content="https://joncroce.github.io/ecommerce-site/favicon.png">
-	<link rel="icon" type="image/png" href="favicon.png">
+		content="Demo using native browser tech of a hierarchical menu displaying products by collapsible categories with &quot;add to favorites&quot; functionality." />
+	<meta name="og:title" content="E-Commerce Site" />
+	<meta name="og:description"
+		content="Demo using native browser tech of a hierarchical menu displaying products by collapsible categories with &quot;add to favorites&quot; functionality." />
+	<meta name="og:url" content="https://joncroce.github.io/ecommerce-site/" />
+	<meta name="og:image" content="https://joncroce.github.io/ecommerce-site/favicon.png" />
+
+	<link rel="icon" type="image/png" href="favicon.png" />
+
 	<title>E-Commerce Site</title>
+
 	<style>
 		/* Reset */
+
 		*,
 		*::before,
 		*::after {
@@ -24,7 +30,6 @@
 			margin: 0;
 		}
 
-		h1,
 		h2,
 		h3,
 		h4 {
@@ -36,27 +41,31 @@
 			list-style: none;
 		}
 
-		/* End Reset */
+		/* Headings */
 
-		main,
-		#products-container {
-			display: grid;
-			place-items: center;
-			width: 100%;
-		}
-
-		.page-header {
-			margin-block: 3rem;
-			display: grid;
-			grid-template-columns: 3rem auto 3rem;
-			gap: 1rem;
-		}
-
-		.page-title {
+		h2 {
 			font-size: 3rem;
 		}
 
-		.logo__wrapper {
+		h3 {
+			font-size: 1.8rem;
+		}
+
+		h4 {
+			font-size: 1.2rem;
+		}
+
+		/* Header */
+
+		.page-header {
+			margin-block: 1em;
+			display: grid;
+			grid-template-columns: 1em auto 1em;
+			gap: 1rem;
+			font-size: 3rem;
+		}
+
+		.logo {
 			grid-column: span 1;
 			display: grid;
 			place-items: center;
@@ -71,6 +80,16 @@
 			width: 100%;
 			aspect-ratio: 1;
 			transform: scaleX(-1);
+		}
+
+		/* Main */
+
+		body,
+		main,
+		#container {
+			display: grid;
+			place-items: center;
+			width: 100%;
 		}
 
 		.category__button:focus-visible,
@@ -99,23 +118,22 @@
 			border: none;
 		}
 
-		.category-list__list-item[aria-expanded="false"] .category__title::after {
+		.category-list__category[aria-expanded="false"] .category__header::after {
 			/* Unicode Character BLACK UP-POINTING TRIANGLE */
 			content: ' \25B2';
 		}
 
-		.category-list__list-item[aria-expanded="true"] .category__title::after {
+		.category-list__category[aria-expanded="true"] .category__header::after {
 			/* Unicode Character BLACK DOWN-POINTING TRIANGLE */
 			content: ' \25BC';
 		}
 
-		.category-list__list-item[aria-expanded="false"] .product-list {
+		.category-list__category[aria-expanded="false"] .product-list {
 			display: none;
 		}
 
-		.category__title {
+		.category__header {
 			padding-block: 0.5rem;
-			font-size: 1.5rem;
 			font-weight: 600;
 			text-align: center;
 			background-color: #DDD;
@@ -139,13 +157,13 @@
 			border: none;
 		}
 
-		.product__button:hover .product__sale-price,
-		.product__button:focus-visible .product__sale-price {
+		.product__button:hover .price__value--sale-price,
+		.product__button:focus-visible .price__value--sale-price {
 			visibility: visible;
 		}
 
-		.product__button:hover .product__price,
-		.product__button:focus-visible .product__price {
+		.product__button:hover .price__value--list-price,
+		.product__button:focus-visible .price__value--list-price {
 			text-decoration: line-through;
 			color: red;
 		}
@@ -155,51 +173,50 @@
 			fill: red;
 		}
 
-		.product__favorited {
-			grid-column: 1 / span 1;
-			font-size: 1.2rem;
+		.product-list__product[data-favorited="true"] .heart-outer {
+			fill: darkred;
 		}
 
-		.product__title {
-			grid-column: 2 / span 1;
-			font-size: 1.1rem;
-			text-align: left;
-		}
-
-		.product__price-wrapper {
-			grid-column: 2 / span 1;
-			font-size: 1.1rem;
-			text-align: left;
-		}
-
-		.product__price-label {
-			color: #333;
-		}
-
-		.product__price {
-			font-family: monospace;
-			color: #333;
-		}
-
-		.product__sale-price {
-			padding-inline: 0.5em;
-			visibility: hidden;
-			font-family: monospace;
-			color: green;
+		.product-list__product[data-favorited="true"] .heart-inner {
+			opacity: 1;
+			fill: red;
 		}
 
 		.heart-inner {
 			opacity: 0;
 		}
 
-		.product__wrapper[data-favorited="true"] .heart-outer {
-			fill: darkred;
+		.product__favorited {
+			grid-column: 1 / span 1;
+			font-size: 1.2rem;
 		}
 
-		.product__wrapper[data-favorited="true"] .heart-inner {
-			opacity: 1;
-			fill: red;
+		.product__header {
+			grid-column: 2 / span 1;
+			text-align: left;
 		}
+
+		.product__price {
+			grid-column: 2 / span 1;
+			font-size: 1.1rem;
+			text-align: left;
+		}
+
+		.price__label {
+			color: #333;
+		}
+
+		.price__value {
+			font-family: monospace;
+		}
+
+		.price__value--sale-price {
+			padding-inline: 0.5em;
+			visibility: hidden;
+			color: green;
+		}
+
+		/* Footer */
 
 		footer {
 			position: fixed;
@@ -213,241 +230,201 @@
 </head>
 
 <body>
+	<header class="page-header">
+		<div class="logo">
+			<img class="logo__image" src="favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
+		</div>
+		<h2>E-Commerce Site</h2>
+		<div class="logo">
+			<img class="logo__image--reverse" src="favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
+		</div>
+	</header>
+
 	<main>
-		<header class="page-header">
-			<div class="logo__wrapper">
-				<img class="logo__image" src="favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
-			</div>
-			<h2 class="page-title">E-Commerce Site</h2>
-			<div class="logo__wrapper">
-				<img class="logo__image--reverse" src="favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
-			</div>
-		</header>
-		<section id="products-container">
+		<section id="container">
 		</section>
 	</main>
+
 	<footer>
 		© 2023 Jon Croce [<a href="https://github.com/joncroce/ecommerce-site">Source Repo</a>]
 	</footer>
-</body>
 
-<noscript>Please enable JavaScript to view this site.</noscript>
+	<noscript>Please enable JavaScript to view this site.</noscript>
 
-<script>
-	(async () => {
-		const productsData = await fetchProducts();
+	<script>
+		(async () => {
+			const productsData = await fetchProducts();
 
-		const linkedDataJson = createLinkedDataJson(productsData);
-		insertLinkedDataScript(linkedDataJson);
+			const linkedDataJson = createLinkedDataJson(productsData);
+			insertLinkedDataScript(linkedDataJson);
 
-		const categoryListEl = createCategoryListEl(productsData);
-		document.getElementById('products-container').appendChild(categoryListEl);
-	})();
+			const containerEl = document.getElementById('container');
+			buildInventoryAndAppendToContainer(productsData, containerEl);
+		})();
 
-	async function fetchProducts() {
-		const url = 'https://neodigm.github.io/FED_Programming_Challenge/products.json';
-		let data = [];
-		try {
-			await fetch(url)
-				.then(res => { data = res.json() });
-		} catch (e) {
-			console.error(e?.message ?? 'Error retrieving product data.');
+		function buildInventoryAndAppendToContainer(productsData, containerEl) {
+			const productsByCategory = groupProductsByCategory(productsData);
+			const categoryListEl = createCategoryListEl();
+			productsByCategory.forEach((products, category) =>
+				buildCategoryAndAppendToList(products, category, categoryListEl)
+			);
+			containerEl.appendChild(categoryListEl);
 		}
 
-		return data;
-	}
-
-	function insertLinkedDataScript(json) {
-		const scriptEl = document.createElement('script');
-		scriptEl.type = 'application/ld+json';
-		scriptEl.text = JSON.stringify(json);
-
-		document.querySelector('head').appendChild(scriptEl);
-	}
-
-	function createLinkedDataJson(productsData = []) {
-		return {
-			"@context": "http://schema.org",
-			"@type": "ItemList",
-			"url": document.documentURI,
-			"numberOfItems": productsData.length,
-			"itemListElement": productsData.map((productData) => {
-				const { cat, product, price, sale } = productData;
-				return {
-					"@type": "Product",
-					"name": product,
-					"category": cat,
-					"Offers": [
-						{
-							"@type": "Offer",
-							"description": "Regular Price",
-							"priceSpecification": {
-								"@type": "PriceSpecification",
-								"priceCurrency": "USD",
-								"price": price
-							},
-						},
-						{
-							"@type": "Offer",
-							"description": "Sale Price",
-							"priceSpecification": {
-								"@type": "PriceSpecification",
-								"priceCurrency": "USD",
-								"price": sale
-							}
-						}
-					],
-				}
-			})
-		}
-	}
-
-	function createCategoryListEl(productsData = []) {
-		const categoryListEl = document.createElement('ul');
-		categoryListEl.classList.add('category-list');
-		categoryListEl.setAttribute('aria-label', 'Product Categories');
-
-		const favoritedProductIds = getFavoritedProductIds();
-		const productsByCategory = groupProductsByCategory(productsData);
-
-		productsByCategory.forEach((products, category) =>
-			buildCategoryAndAppendToList(products, category, favoritedProductIds, categoryListEl)
-		);
-
-		return categoryListEl;
-	}
-
-	function groupProductsByCategory(productsData = []) {
-		const productsByCategory = new Map();
-
-		productsData.forEach((product) => {
-			const category = product.cat;
-			const title = product.product;
-			const price = parseFloat(product.price);
-			const salePrice = parseFloat(product.sale);
-			const id = `${category}_${title}`;
-
-			if (productsByCategory.has(category)) {
-				productsByCategory.set(category, [...productsByCategory.get(category), { id, title, price, salePrice }])
-			} else {
-				productsByCategory.set(category, [{ id, title, price, salePrice }]);
+		async function fetchProducts() {
+			const url = 'https://neodigm.github.io/FED_Programming_Challenge/products.json';
+			let data = [];
+			try {
+				await fetch(url)
+					.then(res => { data = res.json() });
+			} catch (e) {
+				console.error(e?.message ?? 'Error retrieving product data.');
 			}
-		});
 
-		return productsByCategory;
-	}
+			return data;
+		}
 
-	function createCategoryListItemEl() {
-		const categoryListItemEl = document.createElement('li');
-		categoryListItemEl.classList.add('category-list__list-item');
-		categoryListItemEl.setAttribute('aria-expanded', 'false');
+		function createLinkedDataJson(productsData = []) {
+			return {
+				"@context": "http://schema.org",
+				"@type": "ItemList",
+				"url": document.documentURI,
+				"numberOfItems": productsData.length,
+				"itemListElement": productsData.map((productData) => {
+					const { cat, product, price, sale } = productData;
+					return {
+						"@type": "Product",
+						"name": product,
+						"category": cat,
+						"Offers": [
+							{
+								"@type": "Offer",
+								"description": "Regular Price",
+								"priceSpecification": {
+									"@type": "PriceSpecification",
+									"priceCurrency": "USD",
+									"price": price
+								},
+							},
+							{
+								"@type": "Offer",
+								"description": "Sale Price",
+								"priceSpecification": {
+									"@type": "PriceSpecification",
+									"priceCurrency": "USD",
+									"price": sale
+								}
+							}
+						],
+					}
+				})
+			}
+		}
 
-		return categoryListItemEl;
-	}
+		function insertLinkedDataScript(json) {
+			const scriptEl = document.createElement('script');
+			scriptEl.type = 'application/ld+json';
+			scriptEl.text = JSON.stringify(json);
 
-	function createCategoryButtonEl() {
-		const categoryButtonEl = document.createElement('button');
-		categoryButtonEl.classList.add('category__button');
-		categoryButtonEl.setAttribute('type', 'button');
-		categoryButtonEl.addEventListener('click', categoryClickHandler);
+			document.querySelector('head').appendChild(scriptEl);
+		}
 
-		return categoryButtonEl;
-	}
+		function groupProductsByCategory(productsData = []) {
+			const productsByCategory = new Map();
 
-	function createProductListEl(category) {
-		const productListEl = document.createElement('ul');
-		productListEl.classList.add('product-list');
-		productListEl.setAttribute('aria-label', `Products in category: ${category}`)
+			productsData.forEach((productData) => {
+				const category = productData.cat;
+				const name = productData.product;
+				const price = parseFloat(productData.price);
+				const salePrice = parseFloat(productData.sale);
+				const id = `${category}_${name}`;
 
-		return productListEl;
-	}
+				const product = { id, name, price, salePrice };
 
-	function createCategoryTitleEl(category) {
-		const categoryTitleEl = document.createElement('h3');
-		categoryTitleEl.classList.add('category__title');
-		categoryTitleEl.innerText = category;
+				if (productsByCategory.has(category)) {
+					productsByCategory.set(category, [...productsByCategory.get(category), product])
+				} else {
+					productsByCategory.set(category, [product]);
+				}
+			});
 
-		return categoryTitleEl;
-	}
+			return productsByCategory;
+		}
 
-	function buildCategoryAndAppendToList(products, category, favoritedProductIds = [], categoryListEl) {
-		const categoryListItemEl = createCategoryListItemEl();
-		const categoryButtonEl = createCategoryButtonEl();
-		const categoryTitleEl = createCategoryTitleEl(category);
-		const productListEl = createProductListEl(category);
+		function createCategoryListEl() {
+			const categoryListEl = document.createElement('ul');
+			categoryListEl.classList.add('category-list');
+			categoryListEl.setAttribute('aria-label', 'Product Categories');
 
-		categoryListItemEl.appendChild(categoryButtonEl);
-		categoryButtonEl.appendChild(categoryTitleEl);
-		categoryButtonEl.appendChild(productListEl);
+			return categoryListEl;
+		}
 
-		products
-			.map((product) => addIsFavoritedProperty(product, favoritedProductIds))
-			.forEach((product) => buildProductAndAppendToList(product, productListEl));
+		function createCategoryListItemEl() {
+			const categoryListItemEl = document.createElement('li');
+			categoryListItemEl.classList.add('category-list__category');
+			categoryListItemEl.setAttribute('aria-expanded', 'false');
 
-		categoryListEl.appendChild(categoryListItemEl);
-	}
+			return categoryListItemEl;
+		}
 
-	function buildProductAndAppendToList(productData, categoryListItemEl) {
-		const { id, title, price, salePrice, isFavorited } = productData;
+		function createCategoryButtonEl() {
+			const categoryButtonEl = document.createElement('button');
+			categoryButtonEl.classList.add('category__button');
+			categoryButtonEl.setAttribute('type', 'button');
+			categoryButtonEl.addEventListener('click', categoryClickHandler);
 
-		const productWrapperEl = createProductWrapperEl(id, isFavorited);
-		const productButtonEl = createProductButtonEl();
-		const productTitleEl = createProductTitleEl(title);
-		const productFavoriteEl = createProductFavoriteEl();
-		const productPriceWrapperEl = createProductPriceWrapperEl();
-		const productPriceLabelEl = createProductPriceLabelEl();
-		const productPriceEl = createProductPriceEl(price);
-		const productSalePriceEl = createProductSalePriceEl(salePrice);
+			return categoryButtonEl;
+		}
 
-		productPriceWrapperEl.appendChild(productPriceLabelEl);
-		productPriceWrapperEl.appendChild(productPriceEl);
-		productPriceWrapperEl.appendChild(productSalePriceEl);
+		function createCategoryHeaderEl(categoryName) {
+			const categoryHeaderEl = document.createElement('h3');
+			categoryHeaderEl.classList.add('category__header');
+			categoryHeaderEl.innerText = categoryName;
 
-		productButtonEl.appendChild(productFavoriteEl);
-		productButtonEl.appendChild(productTitleEl);
-		productButtonEl.appendChild(productPriceWrapperEl);
+			return categoryHeaderEl;
+		}
 
-		productWrapperEl.appendChild(productButtonEl);
-		categoryListItemEl.appendChild(productWrapperEl);
-	}
+		function createProductListEl(categoryName) {
+			const productListEl = document.createElement('ul');
+			productListEl.classList.add('product-list');
+			productListEl.setAttribute('aria-label', `Products in category: ${categoryName}`)
 
-	function addIsFavoritedProperty(product, favoritedProductIds = []) {
-		return { ...product, isFavorited: favoritedProductIds.includes(product.id) }
-	}
+			return productListEl;
+		}
 
-	function createProductWrapperEl(id, isFavorited = false) {
-		const productWrapperEl = document.createElement('li');
-		productWrapperEl.classList.add('product__wrapper');
-		productWrapperEl.setAttribute('data-id', id);
-		productWrapperEl.setAttribute('data-favorited', isFavorited);
+		function createProductListItemEl(id, isFavorited = false) {
+			const productListItemEl = document.createElement('li');
+			productListItemEl.classList.add('product-list__product');
+			productListItemEl.setAttribute('data-id', id);
+			productListItemEl.setAttribute('data-favorited', isFavorited);
 
-		return productWrapperEl;
-	}
+			return productListItemEl;
+		}
 
-	function createProductButtonEl() {
-		const productButtonEl = document.createElement('button');
-		productButtonEl.classList.add('product__button');
-		productButtonEl.setAttribute('type', 'button');
-		productButtonEl.addEventListener('click', productClickHandler);
+		function createProductButtonEl() {
+			const productButtonEl = document.createElement('button');
+			productButtonEl.classList.add('product__button');
+			productButtonEl.setAttribute('type', 'button');
+			productButtonEl.addEventListener('click', productClickHandler);
 
-		return productButtonEl;
-	}
+			return productButtonEl;
+		}
 
-	function createProductTitleEl(title = '') {
-		const productTitleEl = document.createElement('h4');
-		productTitleEl.classList.add('product__title');
-		productTitleEl.innerText = title;
-		return productTitleEl;
-	}
+		function createProductHeaderEl(productName) {
+			const productHeaderEl = document.createElement('h4');
+			productHeaderEl.classList.add('product__header');
+			productHeaderEl.innerText = productName;
+			return productHeaderEl;
+		}
 
-	function createProductFavoriteEl() {
-		/**
-		 * Using icon ph:heart-straight-duotone from the Phosphor collection
-		 * https://github.com/phosphor-icons/web
-		 */
-		const productFavoriteEl = document.createElement('div');
-		productFavoriteEl.classList.add('product__favorited');
-		productFavoriteEl.innerHTML = `
+		function createProductFavoriteEl() {
+			/**
+			 * Using icon ph:heart-straight-duotone from the Phosphor collection
+			 * https://github.com/phosphor-icons/web
+			 */
+			const productFavoriteEl = document.createElement('div');
+			productFavoriteEl.classList.add('product__favorited');
+			productFavoriteEl.innerHTML = `
 					<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
 						<g fill="#888888">
 							<path class="heart-inner" d="M217.36 133.36L128 224l-89.36-90.64a50 50 0 0 1 70.72-70.72L128 80l18.64-17.36a50 50 0 1 1 70.72 70.72Z" />
@@ -456,77 +433,128 @@
 					</svg>
 				`;
 
-		return productFavoriteEl;
-	}
+			return productFavoriteEl;
+		}
 
-	function createProductPriceWrapperEl() {
-		const productPriceWrapperEl = document.createElement('div');
-		productPriceWrapperEl.classList.add('product__price-wrapper');
+		function createProductPriceWrapperEl() {
+			const productPriceWrapperEl = document.createElement('div');
+			productPriceWrapperEl.classList.add('product__price');
 
-		return productPriceWrapperEl;
-	}
+			return productPriceWrapperEl;
+		}
 
-	function createProductPriceLabelEl() {
-		const productPriceLabelEl = document.createElement('span');
-		productPriceLabelEl.classList.add('product__price-label');
-		productPriceLabelEl.innerText = 'Price: ';
+		function createProductPriceLabelEl() {
+			const productPriceLabelEl = document.createElement('span');
+			productPriceLabelEl.classList.add('price__label');
+			productPriceLabelEl.innerText = 'Price: ';
 
-		return productPriceLabelEl;
-	}
+			return productPriceLabelEl;
+		}
 
-	function createProductPriceEl(price) {
-		const formattedPrice = formatPrice(price);
-		const productPriceEl = document.createElement('span');
-		productPriceEl.classList.add('product__price');
-		productPriceEl.innerText = formattedPrice;
+		function createProductPriceEl(price) {
+			const formattedPrice = formatPrice(price);
+			const productPriceEl = document.createElement('span');
+			productPriceEl.classList.add('price__value--list-price');
+			productPriceEl.innerText = formattedPrice;
 
-		return productPriceEl;
-	}
+			return productPriceEl;
+		}
 
-	function createProductSalePriceEl(salePrice) {
-		const formattedPrice = formatPrice(salePrice);
-		const productSalePriceEl = document.createElement('span');
-		productSalePriceEl.classList.add('product__sale-price');
-		productSalePriceEl.innerText = formattedPrice;
+		function createProductSalePriceEl(salePrice) {
+			const formattedPrice = formatPrice(salePrice);
+			const productSalePriceEl = document.createElement('span');
+			productSalePriceEl.classList.add('price__value--sale-price');
+			productSalePriceEl.innerText = formattedPrice;
 
-		return productSalePriceEl;
-	}
+			return productSalePriceEl;
+		}
 
-	function formatPrice(price) {
-		return isNaN(price)
-			? 'N/A'
-			: price.toFixed(2);
-	}
+		function buildCategoryAndAppendToList(products, category, categoryListEl) {
+			const categoryListItemEl = createCategoryListItemEl();
+			const categoryButtonEl = createCategoryButtonEl();
+			const categoryHeaderEl = createCategoryHeaderEl(category);
+			const productListEl = createProductListEl(category);
 
-	function getFavoritedProductIds() {
-		const favoritedProductIds = localStorage.getItem('favoritedProductIds');
+			categoryListItemEl.appendChild(categoryButtonEl);
+			categoryButtonEl.appendChild(categoryHeaderEl);
+			categoryButtonEl.appendChild(productListEl);
 
-		return favoritedProductIds ? JSON.parse(favoritedProductIds) : [];
-	}
+			products
+				.map(addIsFavoritedProperty)
+				.forEach((product) => buildProductAndAppendToList(product, productListEl));
 
-	function categoryClickHandler(e) {
-		const isExpanded = e.currentTarget.parentNode.getAttribute('aria-expanded');
-		e.currentTarget.parentNode.setAttribute('aria-expanded', isExpanded === 'true' ? 'false' : 'true');
-	}
+			categoryListEl.appendChild(categoryListItemEl);
+		}
 
-	function productClickHandler(e) {
-		e.stopPropagation();
-		const id = e.currentTarget.parentNode.getAttribute('data-id');
-		const isFavorited = e.currentTarget.parentNode.getAttribute('data-favorited') === 'true';
-		const newValue = isFavorited ? 'false' : 'true';
-		e.currentTarget.parentNode.setAttribute('data-favorited', newValue);
+		function addIsFavoritedProperty(product) {
+			const favoritedProductIds = getFavoritedProductIds();
 
-		const favoritedProductIds = getFavoritedProductIds();
-		setFavoritedProductIds(
-			newValue === 'true'
-				? [...favoritedProductIds, id]
-				: favoritedProductIds.filter((val) => val !== id)
-		);
-	}
+			return {
+				...product,
+				isFavorited: favoritedProductIds.includes(product.id)
+			}
+		}
 
-	function setFavoritedProductIds(favoritedProductIds) {
-		localStorage.setItem('favoritedProductIds', JSON.stringify(favoritedProductIds));
-	}
-</script>
+		function buildProductAndAppendToList(productData, categoryListItemEl) {
+			const { id, name, price, salePrice, isFavorited } = productData;
+
+			const productListItemEl = createProductListItemEl(id, isFavorited);
+			const productButtonEl = createProductButtonEl();
+			const productHeaderEl = createProductHeaderEl(name);
+			const productFavoriteEl = createProductFavoriteEl();
+			const productPriceWrapperEl = createProductPriceWrapperEl();
+			const productPriceLabelEl = createProductPriceLabelEl();
+			const productPriceEl = createProductPriceEl(price);
+			const productSalePriceEl = createProductSalePriceEl(salePrice);
+
+			productPriceWrapperEl.appendChild(productPriceLabelEl);
+			productPriceWrapperEl.appendChild(productPriceEl);
+			productPriceWrapperEl.appendChild(productSalePriceEl);
+
+			productButtonEl.appendChild(productFavoriteEl);
+			productButtonEl.appendChild(productHeaderEl);
+			productButtonEl.appendChild(productPriceWrapperEl);
+
+			productListItemEl.appendChild(productButtonEl);
+			categoryListItemEl.appendChild(productListItemEl);
+		}
+
+		function categoryClickHandler(e) {
+			const isExpanded = e.currentTarget.parentNode.getAttribute('aria-expanded');
+			e.currentTarget.parentNode.setAttribute('aria-expanded', isExpanded === 'true' ? 'false' : 'true');
+		}
+
+		function productClickHandler(e) {
+			e.stopPropagation();
+			const id = e.currentTarget.parentNode.getAttribute('data-id');
+			const isFavorited = e.currentTarget.parentNode.getAttribute('data-favorited') === 'true';
+			const newValue = isFavorited ? 'false' : 'true';
+			e.currentTarget.parentNode.setAttribute('data-favorited', newValue);
+
+			const favoritedProductIds = getFavoritedProductIds();
+			setFavoritedProductIds(
+				newValue === 'true'
+					? [...favoritedProductIds, id]
+					: favoritedProductIds.filter((val) => val !== id)
+			);
+		}
+
+		function formatPrice(price) {
+			return isNaN(price)
+				? 'N/A'
+				: price.toFixed(2);
+		}
+
+		function getFavoritedProductIds() {
+			const favoritedProductIds = localStorage.getItem('favoritedProductIds');
+
+			return favoritedProductIds ? JSON.parse(favoritedProductIds) : [];
+		}
+
+		function setFavoritedProductIds(favoritedProductIds) {
+			localStorage.setItem('favoritedProductIds', JSON.stringify(favoritedProductIds));
+		}
+	</script>
+</body>
 
 </html>

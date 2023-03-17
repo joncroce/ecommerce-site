@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>E-Commerce Site</title>
+	<style>
+		/* Reset */
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		h1,
+		h2,
+		h3,
+		h4 {
+			margin: 0;
+		}
+
+		/* Reset styling from button defaults */
+		.category__wrapper,
+		.product__wrapper {
+			padding: 0;
+			border: none;
+		}
+
+		.category__wrapper:focus-visible,
+		.product__wrapper:focus-visible {
+			outline: 2px solid hotpink;
+			outline-offset: -3px;
+		}
+
+		#menu {
+			margin-inline: auto;
+			padding: 0;
+			display: grid;
+			grid-auto-rows: auto;
+			gap: 2px;
+			border: 2px solid #333;
+			background-color: #333;
+			max-width: clamp(200px, 30vw, 800px);
+		}
+
+		.category__wrapper {
+			display: grid;
+			grid-auto-rows: auto;
+			gap: 1px;
+			background-color: #777;
+			cursor: pointer;
+		}
+
+		.category__wrapper[aria-expanded="false"]>.category__title::after {
+			content: ' \25B2';
+		}
+
+		.category__wrapper[aria-expanded="true"]>.category__title::after {
+			content: ' \25BC';
+		}
+
+		.category__wrapper[aria-expanded="false"]>.product__wrapper {
+			display: none;
+		}
+
+		.category__title {
+			padding-block: 0.5rem;
+			font-size: 1.5rem;
+			font-weight: 600;
+			text-align: center;
+			background-color: #DDD;
+		}
+
+		.product__wrapper {
+			padding: 0.5rem 0.25rem;
+			display: grid;
+			grid-template-columns: 2rem auto;
+			gap: 0.25rem;
+			background-color: #FFF;
+			cursor: pointer;
+		}
+
+		.product__wrapper:hover .product__price,
+		.product__wrapper:focus-visible .product__price {
+			visibility: visible;
+		}
+
+		.product__favorited {
+			grid-column: 1 / span 1;
+			font-size: 1.2rem;
+		}
+
+		.product__title {
+			grid-column: 2 / span 1;
+			font-size: 1.1rem;
+			text-align: left;
+		}
+
+		.product__price-wrapper {
+			grid-column: 2 / span 1;
+			font-size: 1.1rem;
+			text-align: left;
+		}
+
+		.product__price-label {}
+
+		.product__price {
+			visibility: hidden;
+		}
+
+		.heart-inner {
+			opacity: 0;
+		}
+
+		.product__wrapper[data-favorited="true"] .heart-inner {
+			opacity: 1;
+		}
+	</style>
+</head>
+
+<body>
+	<section id="menu"></section>
+</body>
+<script>
+	(async () => {
+		async function fetchProducts() {
+			let data = [];
+			try {
+				await fetch('https://fakestoreapi.com/products')
+					.then(res => { data = res.json() });
+			} catch (e) {
+				console.error(e?.message ?? 'Error retrieving product data.');
+			}
+
+			return data;
+		}
+
+		const products = await fetchProducts();
+		buildMenu(products);
+
+	})();
+
+	function buildMenu(data = []) {
+		const menuNode = document.querySelector('#menu');
+		const favoritedProductIds = getFavoritedProductIds();
+
+		const productsByCategory = new Map();
+		data.forEach(({ id, category, title, price }) => {
+			if (productsByCategory.has(category)) {
+				productsByCategory.set(category, [...productsByCategory.get(category), { id, title, price }])
+			} else {
+				productsByCategory.set(category, [{ id, title, price }]);
+			}
+		});
+
+		productsByCategory.forEach((products, category) => {
+			const categoryWrapperEl = document.createElement('button');
+			categoryWrapperEl.classList.add('category__wrapper');
+			categoryWrapperEl.setAttribute('type', 'button');
+			categoryWrapperEl.setAttribute('aria-expanded', 'false');
+			categoryWrapperEl.addEventListener('click', (e) => {
+				const isExpanded = e.currentTarget.getAttribute('aria-expanded');
+				e.currentTarget.setAttribute('aria-expanded', isExpanded === 'true' ? 'false' : 'true');
+			});
+
+			const categoryTitleEl = document.createElement('h2');
+			categoryTitleEl.classList.add('category__title');
+			categoryTitleEl.innerText = category;
+
+			categoryWrapperEl.appendChild(categoryTitleEl);
+
+			products.forEach(({ id, title, price }) => {
+				const productWrapperEl = document.createElement('button');
+				productWrapperEl.classList.add('product__wrapper');
+				productWrapperEl.setAttribute('type', 'button');
+				productWrapperEl.setAttribute('data-favorited', favoritedProductIds.includes(id));
+				productWrapperEl.addEventListener('click', (e) => {
+					e.stopPropagation();
+					const isFavorited = e.currentTarget.getAttribute('data-favorited') === 'true';
+					const newValue = isFavorited ? 'false' : 'true';
+					e.currentTarget.setAttribute('data-favorited', newValue);
+
+					const favoritedProductIds = getFavoritedProductIds();
+					setFavoritedProductIds(
+						newValue === 'true'
+							? [...favoritedProductIds, id]
+							: favoritedProductIds.filter((val) => val !== id)
+					);
+				})
+
+				const productTitleEl = document.createElement('div');
+				productTitleEl.classList.add('product__title');
+				productTitleEl.innerText = title;
+
+				const productFavoriteEl = document.createElement('div');
+				productFavoriteEl.classList.add('product__favorited');
+				productFavoriteEl.innerHTML = `
+					<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
+						<g fill="#888888">
+							<path class="heart-inner" d="M217.36 133.36L128 224l-89.36-90.64a50 50 0 0 1 70.72-70.72L128 80l18.64-17.36a50 50 0 1 1 70.72 70.72Z" />
+							<path d="M223 57a58.07 58.07 0 0 0-81.92-.1L128 69.05l-13.09-12.19A58 58 0 0 0 33 139l89.35 90.66a8 8 0 0 0 11.4 0L223 139a58 58 0 0 0 0-82Zm-11.35 70.76L128 212.6l-83.7-84.92a42 42 0 0 1 59.4-59.4l.2.2l18.65 17.35a8 8 0 0 0 10.9 0l18.65-17.35l.2-.2a42 42 0 1 1 59.36 59.44Z"/>
+						</g>
+					</svg>
+				`;
+
+				const productPriceWrapperEl = document.createElement('div');
+				productPriceWrapperEl.classList.add('product__price-wrapper');
+
+				const productPriceLabelEl = document.createElement('span');
+				productPriceLabelEl.classList.add('product__price-label');
+				productPriceLabelEl.innerText = 'Price: ';
+
+				const productPriceEl = document.createElement('span');
+				productPriceEl.classList.add('product__price');
+				productPriceEl.innerText = `$${Number(price).toFixed(2)}`;
+
+				productPriceWrapperEl.appendChild(productPriceLabelEl);
+				productPriceWrapperEl.appendChild(productPriceEl);
+
+				productWrapperEl.appendChild(productFavoriteEl);
+				productWrapperEl.appendChild(productTitleEl);
+				productWrapperEl.appendChild(productPriceWrapperEl);
+				categoryWrapperEl.appendChild(productWrapperEl);
+			});
+			menuNode.appendChild(categoryWrapperEl);
+		});
+	}
+
+	function getFavoritedProductIds() {
+		const favoritedProductIds = localStorage.getItem('favoritedProductIds');
+		return favoritedProductIds ? JSON.parse(favoritedProductIds) : [];
+	}
+
+	function setFavoritedProductIds(favoritedProductIds) {
+		localStorage.setItem('favoritedProductIds', JSON.stringify(favoritedProductIds));
+	}
+</script>
+
+</html>

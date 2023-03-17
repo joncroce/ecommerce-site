@@ -253,6 +253,7 @@
 		const productWrapperEl = document.createElement('button');
 		productWrapperEl.classList.add('product__wrapper');
 		productWrapperEl.setAttribute('type', 'button');
+		productWrapperEl.setAttribute('data-id', id);
 		productWrapperEl.setAttribute('data-favorited', isFavorited);
 		productWrapperEl.addEventListener('click', productClickHandler);
 
@@ -337,6 +338,7 @@
 
 	function productClickHandler(e) {
 		e.stopPropagation();
+		const id = e.currentTarget.getAttribute('data-id');
 		const isFavorited = e.currentTarget.getAttribute('data-favorited') === 'true';
 		const newValue = isFavorited ? 'false' : 'true';
 		e.currentTarget.setAttribute('data-favorited', newValue);

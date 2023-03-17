@@ -17,7 +17,7 @@
 			</ul>
 		<li>Create a single script element. Code all logic within this element. Use no external libraries.
 			<ul>
-				<li>Using the Fetch promise API get this JSON file. Combine into a normalized JS data structure.</li>
+				<li>Using the Fetch promise API get <a href="https://neodigm.github.io/FED_Programming_Challenge/products.json">this JSON file</a>. Combine into a normalized JS data structure.</li>
 				<li>Iterate through the data structure and generate the HTML elements and event listeners.</li>
 				<li>Hovering over a product name will reveal it's sale price</li>
 				<li>Clicking / tapping on any of the products should "Add to Favorites". This state will display a heart toggle (SVG) next to the product. The list of favorite products will persist between sessions in local storage. Mock a Google Analytics custom event to capture that the product has been favorited.</li>

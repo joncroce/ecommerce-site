@@ -45,11 +45,14 @@
 			width: 100%;
 		}
 
-		.page-title {
-			margin-block: 1em;
+		.page-header {
+			margin-block: 3rem;
 			display: grid;
-			grid-template-columns: 1em auto 1em;
-			gap: 0.25em;
+			grid-template-columns: 3rem auto 3rem;
+			gap: 1rem;
+		}
+
+		.page-title {
 			font-size: 3rem;
 		}
 
@@ -211,15 +214,15 @@
 
 <body>
 	<main>
-		<h2 class="page-title">
+		<header class="page-header">
 			<div class="logo__wrapper">
-				<img class="logo__image" src="/favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
+				<img class="logo__image" src="favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
 			</div>
-			<span>E-Commerce Site</span>
+			<h2 class="page-title">E-Commerce Site</h2>
 			<div class="logo__wrapper">
-				<img class="logo__image--reverse" src="/favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
+				<img class="logo__image--reverse" src="favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
 			</div>
-		</h2>
+		</header>
 		<section id="products-container">
 		</section>
 	</main>

@@ -83,9 +83,14 @@
 			cursor: pointer;
 		}
 
+		.product__wrapper:hover .product__sale-price,
+		.product__wrapper:focus-visible .product__sale-price {
+			visibility: visible;
+		}
+
 		.product__wrapper:hover .product__price,
 		.product__wrapper:focus-visible .product__price {
-			visibility: visible;
+			text-decoration: line-through;
 		}
 
 		.product__favorited {
@@ -107,7 +112,10 @@
 
 		.product__price-label {}
 
-		.product__price {
+		.product__price {}
+
+		.product__sale-price {
+			padding-inline: 0.5em;
 			visibility: hidden;
 		}
 
@@ -172,12 +180,13 @@
 			const category = product.cat;
 			const title = product.product;
 			const price = parseInt(product.price);
+			const salePrice = parseInt(product.sale);
 			const id = `${category}_${title}`;
 
 			if (productsByCategory.has(category)) {
-				productsByCategory.set(category, [...productsByCategory.get(category), { id, title, price }])
+				productsByCategory.set(category, [...productsByCategory.get(category), { id, title, price, salePrice }])
 			} else {
-				productsByCategory.set(category, [{ id, title, price }]);
+				productsByCategory.set(category, [{ id, title, price, salePrice }]);
 			}
 		});
 
@@ -215,16 +224,20 @@
 		menuEl.appendChild(categoryWrapperEl);
 	}
 
-	function buildProductAndAppendToCategory({ id, title, price, isFavorited }, categoryWrapperEl) {
+	function buildProductAndAppendToCategory(productData, categoryWrapperEl) {
+		const { id, title, price, salePrice, isFavorited } = productData;
+
 		const productWrapperEl = createProductWrapperEl(id, isFavorited);
 		const productTitleEl = createProductTitleEl(title);
 		const productFavoriteEl = createProductFavoriteEl();
 		const productPriceWrapperEl = createProductPriceWrapperEl();
 		const productPriceLabelEl = createProductPriceLabelEl();
 		const productPriceEl = createProductPriceEl(price);
+		const productSalePriceEl = createProductSalePriceEl(salePrice);
 
 		productPriceWrapperEl.appendChild(productPriceLabelEl);
 		productPriceWrapperEl.appendChild(productPriceEl);
+		productPriceWrapperEl.appendChild(productSalePriceEl);
 
 		productWrapperEl.appendChild(productFavoriteEl);
 		productWrapperEl.appendChild(productTitleEl);
@@ -241,19 +254,7 @@
 		productWrapperEl.classList.add('product__wrapper');
 		productWrapperEl.setAttribute('type', 'button');
 		productWrapperEl.setAttribute('data-favorited', isFavorited);
-		productWrapperEl.addEventListener('click', (e) => {
-			e.stopPropagation();
-			const isFavorited = e.currentTarget.getAttribute('data-favorited') === 'true';
-			const newValue = isFavorited ? 'false' : 'true';
-			e.currentTarget.setAttribute('data-favorited', newValue);
-
-			const favoritedProductIds = getFavoritedProductIds();
-			setFavoritedProductIds(
-				newValue === 'true'
-					? [...favoritedProductIds, id]
-					: favoritedProductIds.filter((val) => val !== id)
-			);
-		})
+		productWrapperEl.addEventListener('click', productClickHandler);
 
 		return productWrapperEl;
 	}
@@ -300,14 +301,27 @@
 	}
 
 	function createProductPriceEl(price) {
-		const formattedPrice = isNaN(price)
-			? 'N/A'
-			: price.toFixed(2);
+		const formattedPrice = formatPrice(price);
 		const productPriceEl = document.createElement('span');
 		productPriceEl.classList.add('product__price');
 		productPriceEl.innerText = formattedPrice;
 
 		return productPriceEl;
+	}
+
+	function createProductSalePriceEl(salePrice) {
+		const formattedPrice = formatPrice(salePrice);
+		const productSalePriceEl = document.createElement('span');
+		productSalePriceEl.classList.add('product__sale-price');
+		productSalePriceEl.innerText = formattedPrice;
+
+		return productSalePriceEl;
+	}
+
+	function formatPrice(price) {
+		return isNaN(price)
+			? 'N/A'
+			: price.toFixed(2);
 	}
 
 	function getFavoritedProductIds() {
@@ -319,6 +333,20 @@
 	function categoryClickHandler(e) {
 		const isExpanded = e.currentTarget.getAttribute('aria-expanded');
 		e.currentTarget.setAttribute('aria-expanded', isExpanded === 'true' ? 'false' : 'true');
+	}
+
+	function productClickHandler(e) {
+		e.stopPropagation();
+		const isFavorited = e.currentTarget.getAttribute('data-favorited') === 'true';
+		const newValue = isFavorited ? 'false' : 'true';
+		e.currentTarget.setAttribute('data-favorited', newValue);
+
+		const favoritedProductIds = getFavoritedProductIds();
+		setFavoritedProductIds(
+			newValue === 'true'
+				? [...favoritedProductIds, id]
+				: favoritedProductIds.filter((val) => val !== id)
+		);
 	}
 
 	function setFavoritedProductIds(favoritedProductIds) {

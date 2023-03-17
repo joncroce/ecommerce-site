@@ -128,24 +128,23 @@
 
 <script>
 	(async () => {
-		async function fetchProducts() {
-			let data = [];
-			try {
-				await fetch('https://fakestoreapi.com/products')
-					.then(res => { data = res.json() });
-			} catch (e) {
-				console.error(e?.message ?? 'Error retrieving product data.');
-			}
-
-			return data;
-		}
-
 		const productsData = await fetchProducts();
-
 		const menuEl = createMenu(productsData);
-
 		document.body.appendChild(menuEl);
 	})();
+
+	async function fetchProducts() {
+		const url = 'https://neodigm.github.io/FED_Programming_Challenge/products.json';
+		let data = [];
+		try {
+			await fetch(url)
+				.then(res => { data = res.json() });
+		} catch (e) {
+			console.error(e?.message ?? 'Error retrieving product data.');
+		}
+
+		return data;
+	}
 
 	function createMenu(productsData = []) {
 		const menuEl = createMenuEl();
@@ -168,7 +167,13 @@
 
 	function groupProductsByCategory(productsData = []) {
 		const productsByCategory = new Map();
-		productsData.forEach(({ id, category, title, price }) => {
+
+		productsData.forEach((product) => {
+			const category = product.cat;
+			const title = product.product;
+			const price = parseInt(product.price);
+			const id = `${category}_${title}`;
+
 			if (productsByCategory.has(category)) {
 				productsByCategory.set(category, [...productsByCategory.get(category), { id, title, price }])
 			} else {

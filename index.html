@@ -179,8 +179,8 @@
 		productsData.forEach((product) => {
 			const category = product.cat;
 			const title = product.product;
-			const price = parseInt(product.price);
-			const salePrice = parseInt(product.sale);
+			const price = parseFloat(product.price);
+			const salePrice = parseFloat(product.sale);
 			const id = `${category}_${title}`;
 
 			if (productsByCategory.has(category)) {

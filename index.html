@@ -20,9 +20,14 @@
 			box-sizing: border-box;
 		}
 
+		body {
+			margin: 0;
+		}
+
 		h1,
 		h2,
-		h3 {
+		h3,
+		h4 {
 			margin: 0;
 		}
 
@@ -33,9 +38,36 @@
 
 		/* End Reset */
 
-		main {
+		main,
+		#products-container {
 			display: grid;
 			place-items: center;
+			width: 100%;
+		}
+
+		.page-title {
+			margin-block: 1em;
+			display: grid;
+			grid-template-columns: 1em auto 1em;
+			gap: 0.25em;
+			font-size: 3rem;
+		}
+
+		.logo__wrapper {
+			grid-column: span 1;
+			display: grid;
+			place-items: center;
+		}
+
+		.logo__image {
+			width: 100%;
+			aspect-ratio: 1;
+		}
+
+		.logo__image--reverse {
+			width: 100%;
+			aspect-ratio: 1;
+			transform: scaleX(-1);
 		}
 
 		.category__button:focus-visible,
@@ -165,11 +197,35 @@
 			opacity: 1;
 			fill: red;
 		}
+
+		footer {
+			position: fixed;
+			bottom: 0;
+			width: 100%;
+			padding: 0.25em 0.5em;
+			font-family: monospace;
+			text-align: end;
+		}
 	</style>
 </head>
 
 <body>
-	<main id="main"></main>
+	<main>
+		<h2 class="page-title">
+			<div class="logo__wrapper">
+				<img class="logo__image" src="/favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
+			</div>
+			<span>E-Commerce Site</span>
+			<div class="logo__wrapper">
+				<img class="logo__image--reverse" src="/favicon.png" alt="Logo showing a heart shape inside a shopping cart." />
+			</div>
+		</h2>
+		<section id="products-container">
+		</section>
+	</main>
+	<footer>
+		© 2023 Jon Croce [<a href="https://github.com/joncroce/ecommerce-site">Source Repo</a>]
+	</footer>
 </body>
 
 <noscript>Please enable JavaScript to view this site.</noscript>
@@ -178,7 +234,7 @@
 	(async () => {
 		const productsData = await fetchProducts();
 		const categoryListEl = createCategoryListEl(productsData);
-		document.getElementById('main').appendChild(categoryListEl);
+		document.getElementById('products-container').appendChild(categoryListEl);
 	})();
 
 	async function fetchProducts() {
@@ -255,7 +311,7 @@
 	}
 
 	function createCategoryTitleEl(category) {
-		const categoryTitleEl = document.createElement('h2');
+		const categoryTitleEl = document.createElement('h3');
 		categoryTitleEl.classList.add('category__title');
 		categoryTitleEl.innerText = category;
 
@@ -326,7 +382,7 @@
 	}
 
 	function createProductTitleEl(title = '') {
-		const productTitleEl = document.createElement('h3');
+		const productTitleEl = document.createElement('h4');
 		productTitleEl.classList.add('product__title');
 		productTitleEl.innerText = title;
 		return productTitleEl;

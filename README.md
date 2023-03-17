@@ -2,7 +2,11 @@
 
 <p>I came across <a href="https://www.reddit.com/r/webdev/comments/11smo3b/im_currently_in_the_interview_process_for_a_jr/">this reddit post</a> describing a take-home test given to a hiring candidate for a junior front-end development role.</p>
 
-<p><a href="https://joncroce.github.io/ecommerce-site/">This</a> is my attempt to satisfy the requirements, described as follows:</p>
+<p>My attempt can be viewed <a href="https://joncroce.github.io/ecommerce-site/">here</a>, and the code can be found in the <a href="https://github.com/joncroce/ecommerce-site/tree/gh-pages">gh-pages branch</a>.</p>
+
+<h2>The Assignment</h2>
+
+<p>The requirements were described as follows:</p>
 
 <blockquote>
 	<p>This is a front-end engineer programming exercise designed to test the skills required to maintain an eCom site utilizing modern technology native to the browser.</p>
@@ -19,7 +23,7 @@
 			<ul>
 				<li>Using the Fetch promise API get <a href="https://neodigm.github.io/FED_Programming_Challenge/products.json">this JSON file</a>. Combine into a normalized JS data structure.</li>
 				<li>Iterate through the data structure and generate the HTML elements and event listeners.</li>
-				<li>Hovering over a product name will reveal it's sale price</li>
+				<li>Hovering over a product name will reveal its sale price</li>
 				<li>Clicking / tapping on any of the products should "Add to Favorites". This state will display a heart toggle (SVG) next to the product. The list of favorite products will persist between sessions in local storage. Mock a Google Analytics custom event to capture that the product has been favorited.</li>
 			</ul>
 		<li>Create a single style element. Code all CSS within this block. Use no external libraries.

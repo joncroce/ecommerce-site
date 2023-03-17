@@ -2,7 +2,7 @@
 
 <p>I came across <a href="https://www.reddit.com/r/webdev/comments/11smo3b/im_currently_in_the_interview_process_for_a_jr/">this reddit post</a> describing a take-home test given to a hiring candidate for a junior front-end development role.</p>
 
-<p>This is my attempt to satisfy the requirements, described as follows:</p>
+<p><a href="https://joncroce.github.io/ecommerce-site/">This</a> is my attempt to satisfy the requirements, described as follows:</p>
 
 <blockquote>
 	<p>This is a front-end engineer programming exercise designed to test the skills required to maintain an eCom site utilizing modern technology native to the browser.</p>

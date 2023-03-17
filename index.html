@@ -36,7 +36,7 @@
 			outline-offset: -3px;
 		}
 
-		#menu {
+		.menu {
 			padding: 0;
 			display: grid;
 			grid-auto-rows: auto;
@@ -122,8 +122,10 @@
 </head>
 
 <body>
-	<section id="menu"></section>
 </body>
+
+<noscript>Please enable JavaScript to view this site.</noscript>
+
 <script>
 	(async () => {
 		async function fetchProducts() {
@@ -138,17 +140,35 @@
 			return data;
 		}
 
-		const products = await fetchProducts();
-		buildMenu(products);
+		const productsData = await fetchProducts();
 
+		const menuEl = createMenu(productsData);
+
+		document.body.appendChild(menuEl);
 	})();
 
-	function buildMenu(data = []) {
-		const menuNode = document.querySelector('#menu');
+	function createMenu(productsData = []) {
+		const menuEl = createMenuEl();
 		const favoritedProductIds = getFavoritedProductIds();
+		const productsByCategory = groupProductsByCategory(productsData);
 
+		productsByCategory.forEach((products, category) =>
+			buildCategoryAndAppendToMenu(products, category, favoritedProductIds, menuEl)
+		);
+
+		return menuEl;
+	}
+
+	function createMenuEl() {
+		const menuEl = document.createElement('section');
+		menuEl.classList.add('menu');
+
+		return menuEl;
+	}
+
+	function groupProductsByCategory(productsData = []) {
 		const productsByCategory = new Map();
-		data.forEach(({ id, category, title, price }) => {
+		productsData.forEach(({ id, category, title, price }) => {
 			if (productsByCategory.has(category)) {
 				productsByCategory.set(category, [...productsByCategory.get(category), { id, title, price }])
 			} else {
@@ -156,48 +176,94 @@
 			}
 		});
 
-		productsByCategory.forEach((products, category) => {
-			const categoryWrapperEl = document.createElement('button');
-			categoryWrapperEl.classList.add('category__wrapper');
-			categoryWrapperEl.setAttribute('type', 'button');
-			categoryWrapperEl.setAttribute('aria-expanded', 'false');
-			categoryWrapperEl.addEventListener('click', (e) => {
-				const isExpanded = e.currentTarget.getAttribute('aria-expanded');
-				e.currentTarget.setAttribute('aria-expanded', isExpanded === 'true' ? 'false' : 'true');
-			});
+		return productsByCategory;
+	}
 
-			const categoryTitleEl = document.createElement('h2');
-			categoryTitleEl.classList.add('category__title');
-			categoryTitleEl.innerText = category;
+	function createCategoryWrapperEl() {
+		const categoryWrapperEl = document.createElement('button');
+		categoryWrapperEl.classList.add('category__wrapper');
+		categoryWrapperEl.setAttribute('type', 'button');
+		categoryWrapperEl.setAttribute('aria-expanded', 'false');
+		categoryWrapperEl.addEventListener('click', categoryClickHandler);
 
-			categoryWrapperEl.appendChild(categoryTitleEl);
+		return categoryWrapperEl;
+	}
 
-			products.forEach(({ id, title, price }) => {
-				const productWrapperEl = document.createElement('button');
-				productWrapperEl.classList.add('product__wrapper');
-				productWrapperEl.setAttribute('type', 'button');
-				productWrapperEl.setAttribute('data-favorited', favoritedProductIds.includes(id));
-				productWrapperEl.addEventListener('click', (e) => {
-					e.stopPropagation();
-					const isFavorited = e.currentTarget.getAttribute('data-favorited') === 'true';
-					const newValue = isFavorited ? 'false' : 'true';
-					e.currentTarget.setAttribute('data-favorited', newValue);
+	function createCategoryTitleEl(category) {
+		const categoryTitleEl = document.createElement('h2');
+		categoryTitleEl.classList.add('category__title');
+		categoryTitleEl.innerText = category;
 
-					const favoritedProductIds = getFavoritedProductIds();
-					setFavoritedProductIds(
-						newValue === 'true'
-							? [...favoritedProductIds, id]
-							: favoritedProductIds.filter((val) => val !== id)
-					);
-				})
+		return categoryTitleEl;
+	}
 
-				const productTitleEl = document.createElement('div');
-				productTitleEl.classList.add('product__title');
-				productTitleEl.innerText = title;
+	function buildCategoryAndAppendToMenu(products, category, favoritedProductIds, menuEl) {
+		const categoryWrapperEl = createCategoryWrapperEl();
+		const categoryTitleEl = createCategoryTitleEl(category);
 
-				const productFavoriteEl = document.createElement('div');
-				productFavoriteEl.classList.add('product__favorited');
-				productFavoriteEl.innerHTML = `
+		categoryWrapperEl.appendChild(categoryTitleEl);
+
+		products
+			.map((product) => addIsFavoritedProperty(product, favoritedProductIds))
+			.forEach((product) => buildProductAndAppendToCategory(product, categoryWrapperEl));
+
+		menuEl.appendChild(categoryWrapperEl);
+	}
+
+	function buildProductAndAppendToCategory({ id, title, price, isFavorited }, categoryWrapperEl) {
+		const productWrapperEl = createProductWrapperEl(id, isFavorited);
+		const productTitleEl = createProductTitleEl(title);
+		const productFavoriteEl = createProductFavoriteEl();
+		const productPriceWrapperEl = createProductPriceWrapperEl();
+		const productPriceLabelEl = createProductPriceLabelEl();
+		const productPriceEl = createProductPriceEl(price);
+
+		productPriceWrapperEl.appendChild(productPriceLabelEl);
+		productPriceWrapperEl.appendChild(productPriceEl);
+
+		productWrapperEl.appendChild(productFavoriteEl);
+		productWrapperEl.appendChild(productTitleEl);
+		productWrapperEl.appendChild(productPriceWrapperEl);
+		categoryWrapperEl.appendChild(productWrapperEl);
+	}
+
+	function addIsFavoritedProperty(product, favoritedProductIds) {
+		return { ...product, isFavorited: favoritedProductIds.includes(product.id) }
+	}
+
+	function createProductWrapperEl(id, isFavorited) {
+		const productWrapperEl = document.createElement('button');
+		productWrapperEl.classList.add('product__wrapper');
+		productWrapperEl.setAttribute('type', 'button');
+		productWrapperEl.setAttribute('data-favorited', isFavorited);
+		productWrapperEl.addEventListener('click', (e) => {
+			e.stopPropagation();
+			const isFavorited = e.currentTarget.getAttribute('data-favorited') === 'true';
+			const newValue = isFavorited ? 'false' : 'true';
+			e.currentTarget.setAttribute('data-favorited', newValue);
+
+			const favoritedProductIds = getFavoritedProductIds();
+			setFavoritedProductIds(
+				newValue === 'true'
+					? [...favoritedProductIds, id]
+					: favoritedProductIds.filter((val) => val !== id)
+			);
+		})
+
+		return productWrapperEl;
+	}
+
+	function createProductTitleEl(title = '') {
+		const productTitleEl = document.createElement('div');
+		productTitleEl.classList.add('product__title');
+		productTitleEl.innerText = title;
+		return productTitleEl;
+	}
+
+	function createProductFavoriteEl() {
+		const productFavoriteEl = document.createElement('div');
+		productFavoriteEl.classList.add('product__favorited');
+		productFavoriteEl.innerHTML = `
 					<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
 						<g fill="#888888">
 							<path class="heart-inner" d="M217.36 133.36L128 224l-89.36-90.64a50 50 0 0 1 70.72-70.72L128 80l18.64-17.36a50 50 0 1 1 70.72 70.72Z" />
@@ -206,32 +272,44 @@
 					</svg>
 				`;
 
-				const productPriceWrapperEl = document.createElement('div');
-				productPriceWrapperEl.classList.add('product__price-wrapper');
+		return productFavoriteEl;
+	}
 
-				const productPriceLabelEl = document.createElement('span');
-				productPriceLabelEl.classList.add('product__price-label');
-				productPriceLabelEl.innerText = 'Price: ';
+	function createProductPriceWrapperEl() {
+		const productPriceWrapperEl = document.createElement('div');
+		productPriceWrapperEl.classList.add('product__price-wrapper');
 
-				const productPriceEl = document.createElement('span');
-				productPriceEl.classList.add('product__price');
-				productPriceEl.innerText = `$${Number(price).toFixed(2)}`;
+		return productPriceWrapperEl;
+	}
 
-				productPriceWrapperEl.appendChild(productPriceLabelEl);
-				productPriceWrapperEl.appendChild(productPriceEl);
+	function createProductPriceLabelEl() {
+		const productPriceLabelEl = document.createElement('span');
+		productPriceLabelEl.classList.add('product__price-label');
+		productPriceLabelEl.innerText = 'Price: ';
 
-				productWrapperEl.appendChild(productFavoriteEl);
-				productWrapperEl.appendChild(productTitleEl);
-				productWrapperEl.appendChild(productPriceWrapperEl);
-				categoryWrapperEl.appendChild(productWrapperEl);
-			});
-			menuNode.appendChild(categoryWrapperEl);
-		});
+		return productPriceLabelEl;
+	}
+
+	function createProductPriceEl(price) {
+		const formattedPrice = isNaN(price)
+			? 'N/A'
+			: price.toFixed(2);
+		const productPriceEl = document.createElement('span');
+		productPriceEl.classList.add('product__price');
+		productPriceEl.innerText = formattedPrice;
+
+		return productPriceEl;
 	}
 
 	function getFavoritedProductIds() {
 		const favoritedProductIds = localStorage.getItem('favoritedProductIds');
+
 		return favoritedProductIds ? JSON.parse(favoritedProductIds) : [];
+	}
+
+	function categoryClickHandler(e) {
+		const isExpanded = e.currentTarget.getAttribute('aria-expanded');
+		e.currentTarget.setAttribute('aria-expanded', isExpanded === 'true' ? 'false' : 'true');
 	}
 
 	function setFavoritedProductIds(favoritedProductIds) {

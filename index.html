@@ -211,7 +211,7 @@
 		return categoryTitleEl;
 	}
 
-	function buildCategoryAndAppendToMenu(products, category, favoritedProductIds, menuEl) {
+	function buildCategoryAndAppendToMenu(products, category, favoritedProductIds = [], menuEl) {
 		const categoryWrapperEl = createCategoryWrapperEl();
 		const categoryTitleEl = createCategoryTitleEl(category);
 
@@ -245,11 +245,11 @@
 		categoryWrapperEl.appendChild(productWrapperEl);
 	}
 
-	function addIsFavoritedProperty(product, favoritedProductIds) {
+	function addIsFavoritedProperty(product, favoritedProductIds = []) {
 		return { ...product, isFavorited: favoritedProductIds.includes(product.id) }
 	}
 
-	function createProductWrapperEl(id, isFavorited) {
+	function createProductWrapperEl(id, isFavorited = false) {
 		const productWrapperEl = document.createElement('button');
 		productWrapperEl.classList.add('product__wrapper');
 		productWrapperEl.setAttribute('type', 'button');
